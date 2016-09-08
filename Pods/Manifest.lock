@@ -1,0 +1,36 @@
+PODS:
+  - Alamofire (3.4.1)
+  - AlamofireObjectMapper (3.0.2):
+    - Alamofire (~> 3.2)
+    - ObjectMapper (~> 1.0)
+  - ObjectMapper (1.4.0)
+  - RxBlocking (2.6.0):
+    - RxSwift (~> 2.5)
+  - RxCocoa (2.6.0):
+    - RxSwift (~> 2.5)
+  - RxSwift (2.6.0)
+  - RxTests (2.6.0):
+    - RxSwift (~> 2.5)
+  - Swinject (1.1.2)
+
+DEPENDENCIES:
+  - AlamofireObjectMapper (~> 3.0)
+  - RxBlocking (~> 2.0)
+  - RxCocoa (~> 2.0)
+  - RxSwift (~> 2.0)
+  - RxTests (~> 2.0)
+  - Swinject (~> 1.0)
+
+SPEC CHECKSUMS:
+  Alamofire: 01a82e2f6c0f860ade35534c8dd88be61bdef40c
+  AlamofireObjectMapper: 70f97cbf45c01c48d26aa07a1a7059a60ed7411d
+  ObjectMapper: a07ad0462c5adf014adc0f89ef04c29b626e855e
+  RxBlocking: f2e0a7e74d5e9d3029d2b1118e2af01f583fbdd8
+  RxCocoa: 89ab00d5753502520227940e3a0e0a0413683c6b
+  RxSwift: 77f3a0b15324baa7a1c9bfa9f199648a82424e26
+  RxTests: cdcc379c70e80089a8bc2c99515223339d1c3b81
+  Swinject: 3debc5ac926dcd1be00947265a9db7a5f31b272a
+
+PODFILE CHECKSUM: 49f284c4a4ed623a555c5435efa72d43cfbc1793
+
+COCOAPODS: 1.0.1
