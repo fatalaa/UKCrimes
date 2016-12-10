@@ -10,11 +10,11 @@ import MapKit
 
 extension CLLocationCoordinate2D {
     
-    static func create(crime: CrimeResponseModel?) -> CLLocationCoordinate2D? {
-        guard let lat = crime?.location?.latitude, lon = crime?.location?.longitude else {
+    static func create(_ crime: CrimeResponseModel?) -> CLLocationCoordinate2D? {
+        guard let lat = crime?.location?.latitude, let lon = crime?.location?.longitude else {
             return nil
         }
-        if let latDouble = Double(lat), lonDouble = Double(lon) {
+        if let latDouble = Double(lat), let lonDouble = Double(lon) {
             return CLLocationCoordinate2DMake(latDouble, lonDouble)
         } else {
             return nil

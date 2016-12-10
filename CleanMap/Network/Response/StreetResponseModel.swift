@@ -11,7 +11,7 @@ import ObjectMapper
 
 struct StreetResponseModel: Mappable {
     
-    private enum StreetModelKeyNames {
+    fileprivate enum StreetModelKeyNames {
         static let IDKey = "id"
         static let nameKey = "name"
     }
@@ -19,7 +19,7 @@ struct StreetResponseModel: Mappable {
     var ID: Int?
     var name: String?
     
-    init?(_ map: Map) {
+    init?(map: Map) {
         
     }
     

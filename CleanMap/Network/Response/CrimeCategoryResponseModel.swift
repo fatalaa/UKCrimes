@@ -11,7 +11,7 @@ import ObjectMapper
 
 struct CrimeCategoryResponseModel: Mappable {
     
-    private enum CrimeCategoryKeys {
+    fileprivate enum CrimeCategoryKeys {
         static let IDKey = "url"
         static let nameKey = "name"
     }
@@ -19,7 +19,7 @@ struct CrimeCategoryResponseModel: Mappable {
     var ID: String?
     var name: String?
     
-    init?(_ map: Map) {
+    init?(map: Map) {
         
     }
     

@@ -11,7 +11,7 @@ import ObjectMapper
 
 struct CrimeResponseModel: Mappable {
     
-    private enum CrimeModelKeys {
+    fileprivate enum CrimeModelKeys {
         static let categoryKey = "category"
         static let persistentIDKey = "persistent_id"
         static let locationTypeKey = "location_type"
@@ -33,7 +33,7 @@ struct CrimeResponseModel: Mappable {
     var month: String?
     var outcomeStatus: String?
     
-    init?(_ map: Map) {
+    init?(map: Map) {
         
     }
     

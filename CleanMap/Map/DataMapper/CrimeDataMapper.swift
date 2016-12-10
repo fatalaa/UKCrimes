@@ -10,8 +10,8 @@ import Foundation
 import MapKit
 
 protocol CrimeDataMapperInterface {
-    func map(crimes: [CrimeResponseModel]?) -> [CrimeAnnotationModel]?
-    func map(crime: CrimeResponseModel?) -> CrimeAnnotationModel?
+    func map(_ crimes: [CrimeResponseModel]?) -> [CrimeAnnotationModel]?
+    func map(_ crime: CrimeResponseModel?) -> CrimeAnnotationModel?
 }
 
 struct CrimeDataMapper: CrimeDataMapperInterface {
@@ -22,11 +22,11 @@ struct CrimeDataMapper: CrimeDataMapperInterface {
     
     var categoryMappings: [String:String]!
     
-    func map(crime: CrimeResponseModel?) -> CrimeAnnotationModel? {
+    func map(_ crime: CrimeResponseModel?) -> CrimeAnnotationModel? {
         guard let category = crime?.category,
-                  ID = crime?.ID,
-            coordinate = CLLocationCoordinate2D.create(crime),
-            date = crime?.month else {
+                  let ID = crime?.ID,
+            let coordinate = CLLocationCoordinate2D.create(crime),
+            let date = crime?.month else {
                 return nil
         }
         if let mappedCategory = categoryMappings[category] {
@@ -39,7 +39,7 @@ struct CrimeDataMapper: CrimeDataMapperInterface {
         return nil
     }
     
-    func map(crimes: [CrimeResponseModel]?) -> [CrimeAnnotationModel]? {
+    func map(_ crimes: [CrimeResponseModel]?) -> [CrimeAnnotationModel]? {
         var annotationModels = [CrimeAnnotationModel]()
         guard let crimes = crimes else {
             return nil

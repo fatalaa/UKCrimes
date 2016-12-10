@@ -12,8 +12,8 @@ import Foundation
 
 protocol PoliceAPIClientInterface {
     var baseURL: String? {get set}
-    func fetchStreetCrimes(latitude: Double, longitude: Double, successBlock: ([CrimeResponseModel]?) -> (), failureBlock: (NSError?) -> ())
-    func fetchCrimeCategories(successBlock: ([CrimeCategoryResponseModel]?) -> (), failureBlock: (NSError?) -> ())
+    func fetchStreetCrimes(_ latitude: Double, longitude: Double, successBlock: @escaping ([CrimeResponseModel]?) -> (), failureBlock: @escaping (NSError?) -> ())
+    func fetchCrimeCategories(_ successBlock: @escaping ([CrimeCategoryResponseModel]?) -> (), _ failureBlock: @escaping (NSError?) -> ())
 }
 
 struct PoliceAPIClient: PoliceAPIClientInterface {
@@ -31,41 +31,35 @@ struct PoliceAPIClient: PoliceAPIClientInterface {
     
     var baseURL: String?
     
-    func fetchStreetCrimes(latitude: Double, longitude: Double, successBlock: ([CrimeResponseModel]?) -> (), failureBlock: (NSError?) -> ()) {
-        guard let URL = baseURL?.stringByAppendingString(PoliceAPIClientConstants.streetCrimesEndpointKey) else {
+    func fetchStreetCrimes(_ latitude: Double, longitude: Double, successBlock: @escaping ([CrimeResponseModel]?) -> (), failureBlock: @escaping (NSError?) -> ()) {
+        guard let baseURL = baseURL else {
             return
         }
+        let URL = baseURL + PoliceAPIClientConstants.streetCrimesEndpointKey
         let parameters = [
             PoliceAPIClientConstants.latitudeKey: String(latitude),
             PoliceAPIClientConstants.longitudeKey: String(longitude)
         ]
-        Alamofire.request(.GET,
-                          URL,
-                          parameters: parameters,
-                          encoding: .URL,
-                          headers: [:])
-            .responseArray { (response: Response<[CrimeResponseModel], NSError>) in
+        Alamofire.request(URL, method: .get, parameters: parameters)
+            .responseArray { (response: DataResponse<[CrimeResponseModel]>) in
                 guard let result = response.result.value else {
-                    failureBlock(response.result.error)
+                    failureBlock(response.result.error as NSError?)
                     return
                 }
                 successBlock(result)
         }
     }
     
-    func fetchCrimeCategories(successBlock: ([CrimeCategoryResponseModel]?) -> (),
-                              failureBlock: (NSError?) -> ()) {
-        guard let URL = baseURL?.stringByAppendingString(PoliceAPIClientConstants.crimeCategoriesEndpointKey) else {
+    func fetchCrimeCategories(_ successBlock: @escaping ([CrimeCategoryResponseModel]?) -> (),
+                              _ failureBlock: @escaping (NSError?) -> ()) {
+        guard let baseURL = baseURL else {
             return
         }
-        Alamofire.request(.GET,
-                          URL,
-                          parameters: [:],
-                          encoding: .URL,
-                          headers: [:])
-            .responseArray { (response: Response<[CrimeCategoryResponseModel], NSError>) in
+        let URL = baseURL + PoliceAPIClientConstants.crimeCategoriesEndpointKey
+        Alamofire.request(URL)
+            .responseArray { (response: DataResponse<[CrimeCategoryResponseModel]>) in
                 guard let result = response.result.value else {
-                    failureBlock(response.result.error)
+                    failureBlock(response.result.error as NSError?)
                     return
                 }
                 successBlock(result)

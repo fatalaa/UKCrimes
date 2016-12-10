@@ -11,24 +11,24 @@ import MapKit
 import RxSwift
 
 protocol LocalSearchInterface {
-    func executeQuery(query: String,
-                      successBlock: (response: MKLocalSearchResponse?) -> (),
-                      failureBlock: (error: NSError?) -> ())
+    func executeQuery(_ query: String,
+                      successBlock: @escaping (_ response: MKLocalSearchResponse?) -> (),
+                      failureBlock: @escaping (_ error: NSError?) -> ())
 }
 
 struct LocalSearch: LocalSearchInterface {
     
-    func executeQuery(query: String,
-                      successBlock: (response: MKLocalSearchResponse?) -> (),
-                      failureBlock: (error: NSError?) -> ()) {
+    func executeQuery(_ query: String,
+                      successBlock: @escaping (_ response: MKLocalSearchResponse?) -> (),
+                      failureBlock: @escaping (_ error: NSError?) -> ()) {
         let request = MKLocalSearchRequest()
         request.naturalLanguageQuery = query
         let search = MKLocalSearch(request: request)
-        search.startWithCompletionHandler { (response, error) in
+        search.start { (response, error) in
             if let error = error {
-                failureBlock(error: error)
+                failureBlock(error as NSError?)
             } else {
-                successBlock(response: response)
+                successBlock(response)
             }
         }
     }

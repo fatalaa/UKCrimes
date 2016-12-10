@@ -16,7 +16,7 @@ protocol MapSearchResultsViewModelInterface {
 
 struct MapSearchResultsViewModel: MapSearchResultsViewModelInterface {
     
-    private enum ViewModelConstants {
+    fileprivate enum ViewModelConstants {
         static let throttleInterval = 0.7
         static let scheduler = MainScheduler.instance
     }
@@ -25,16 +25,16 @@ struct MapSearchResultsViewModel: MapSearchResultsViewModelInterface {
     
     var searchText = Variable<String>("")
     
-    private let disposeBag = DisposeBag()
+    fileprivate let disposeBag = DisposeBag()
     
-    private let localSearch = LocalSearch()
+    fileprivate let localSearch = LocalSearch()
     
     init(view: MapSearchResultsView) {
         self.view = view
         setupBindings()
     }
     
-    private func setupBindings() {
+    fileprivate func setupBindings() {
         searchText
             .asObservable()
             .filter({ (newValue) -> Bool in
@@ -42,21 +42,24 @@ struct MapSearchResultsViewModel: MapSearchResultsViewModelInterface {
             })
             .throttle(ViewModelConstants.throttleInterval, scheduler: ViewModelConstants.scheduler)
             .distinctUntilChanged()
-            .subscribeNext { (searchText) in
+            .subscribe({ (searchText) in
+                guard let searchText = searchText.element else {
+                    return
+                }
                 self.view.networkActivityIndicatorShow.value = true
                 self.localSearch.executeQuery(searchText,
-                    successBlock: { (response) in
-                        self.view.networkActivityIndicatorShow.value = false
-                        if let mapItems = response?.mapItems {
-                            self.view.results.value = mapItems
-                        }
-                    },
-                    failureBlock: { (error) in
-                        self.view.networkActivityIndicatorShow.value = false
-                        print(error?.description)
-                    }
+                                              successBlock: { (response) in
+                                                self.view.networkActivityIndicatorShow.value = false
+                                                if let mapItems = response?.mapItems {
+                                                    self.view.results.value = mapItems
+                                                }
+                },
+                                              failureBlock: { (error) in
+                                                self.view.networkActivityIndicatorShow.value = false
+                                                print(error?.description ?? "Error in localsearch callback")
+                }
                 )
-            }
+            })
             .addDisposableTo(disposeBag)
     }
 }

@@ -11,7 +11,7 @@ import ObjectMapper
 
 struct LocationResponseModel: Mappable {
     
-    private enum LocationModelKeys {
+    fileprivate enum LocationModelKeys {
         static let latitudeKey = "latitude"
         static let longitudeKey = "longitude"
         static let streetKey = "street"
@@ -21,7 +21,7 @@ struct LocationResponseModel: Mappable {
     var longitude: String?
     var street: StreetResponseModel?
     
-    init?(_ map: Map) {
+    init?(map: Map) {
         
     }
     

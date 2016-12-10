@@ -17,13 +17,13 @@ protocol MapViewInterface {
 
 class MapViewController: UIViewController, MKMapViewDelegate, MapViewInterface {
     
-    private enum MapViewControllerContants {
+    fileprivate enum MapViewControllerContants {
         static let mapRadiusWhenPlaceSelected = 5.0
     }
     
-    private var searchController: UISearchController!
+    fileprivate var searchController: UISearchController!
     
-    private var mapView: MKMapView!
+    fileprivate var mapView: MKMapView!
     
     var mapItem = Variable<MKMapItem>(MKMapItem())
     
@@ -31,7 +31,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapViewInterface {
     
     var crimes = Variable<[CrimeAnnotationModel]>([])
     
-    private let disposeBag = DisposeBag()
+    fileprivate let disposeBag = DisposeBag()
     
     var viewModel: MapViewModelInterface!
     
@@ -44,7 +44,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapViewInterface {
         viewModel = MapViewModel(view: self)
         
         if let viewModel = viewModel as? MapSearchResultsDelegate {
-            let searchResultsController = MapSearchResultsController(style: .Plain,
+            let searchResultsController = MapSearchResultsController(style: .plain,
                                                                      delegate: viewModel)
             searchController = UISearchController(searchResultsController: searchResultsController)
             searchController.hidesNavigationBarDuringPresentation = false
@@ -57,19 +57,19 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapViewInterface {
         setupBindings()
     }
     
-    func mapView(mapView: MKMapView, didUpdateUserLocation userLocation: MKUserLocation) {
+    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         let region = MKCoordinateRegionMake(userLocation.coordinate, MKCoordinateSpanMake(1, 1))
         mapView.setRegion(mapView.regionThatFits(region), animated: true)
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        var annotationView = mapView.dequeueReusableAnnotationViewWithIdentifier("RK") as? MKPinAnnotationView
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "RK") as? MKPinAnnotationView
         if annotationView != nil {
             annotationView?.annotation = annotation
         } else {
             annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "RK")
             annotationView?.canShowCallout = true
-            annotationView?.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+            annotationView?.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
         }
         return annotationView
     }
@@ -77,12 +77,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapViewInterface {
     func setupBindings() {
         mapItem
             .asObservable()
-            .subscribeNext({ [weak self] (mapItem) in
-                guard let strongSelf = self else {
+            .subscribe({ [weak self] (mapItem) in
+                guard let strongSelf = self, let mapItem = mapItem.element else {
                     return
                 }
-                strongSelf.searchController.dismissViewControllerAnimated(true, completion: { [weak self] in
-                    guard let innerStrongSelf = self, coordinate = mapItem.placemark.location?.coordinate else {
+                strongSelf.searchController.dismiss(animated: true, completion: { [weak self] in
+                    guard let innerStrongSelf = self, let coordinate = mapItem.placemark.location?.coordinate else {
                         return
                     }
                     innerStrongSelf.mapView.setVisibleRegion(
@@ -91,27 +91,29 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapViewInterface {
                     )
                     innerStrongSelf.viewModel.fetchCrimesAtLocation(coordinate)
                 })
-                
             })
             .addDisposableTo(disposeBag)
         
         showsNetworkActivityIndicator
             .asObservable()
-            .subscribeNext { (showsNetworkActivityIndicator) in
-                UIApplication.sharedApplication().networkActivityIndicatorVisible = showsNetworkActivityIndicator
-            }
+            .subscribe(onNext: { (showsNetworkActivityIndicator) in
+                UIApplication.shared.isNetworkActivityIndicatorVisible = showsNetworkActivityIndicator
+            })
             .addDisposableTo(disposeBag)
         
         crimes
             .asObservable()
-            .subscribeNext { [weak self] (crimes) in
+            .subscribe({ [weak self] (crimes) in
+                guard let crimes = crimes.element else {
+                    return
+                }
                 if crimes.count <= 0 {
                     return
                 }
                 if let strongSelf = self {
                     strongSelf.mapView.addAnnotationsBasedOnCrimes(crimes)
                 }
-            }
+            })
             .addDisposableTo(disposeBag)
     }
 }

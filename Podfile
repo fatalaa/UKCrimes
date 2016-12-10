@@ -5,13 +5,20 @@ platform :ios, '9.0'
 use_frameworks!
 
 target 'CleanMap' do
-  pod 'AlamofireObjectMapper', '~> 3.0'
-  pod 'RxCocoa', '~> 2.0'
-  pod 'RxSwift', '~> 2.0'
-  pod 'Swinject', '~> 1.0'
+  pod 'AlamofireObjectMapper', '~> 4.0'
+  pod 'RxCocoa', '~> 3.0'
+  pod 'RxSwift', '~> 3.0'
 end
 
 target 'CleanMapTests' do
-  pod 'RxBlocking', '~> 2.0'
-  pod 'RxTests', '~> 2.0'
+  pod 'RxBlocking', '~> 3.0'
+  pod 'RxTest', '~> 3.0'
+end
+
+post_install do |installer| 
+  installer.pods_project.targets.each  do |target| 
+      target.build_configurations.each  do |config| 
+	config.build_settings['SWIFT_VERSION'] = '3.0' 
+      end 
+   end 
 end

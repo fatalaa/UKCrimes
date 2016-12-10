@@ -17,12 +17,12 @@ protocol MapSearchResultsView {
 }
 
 protocol MapSearchResultsDelegate {
-    func mapSearchResultsController(mapSearchResultsController: MapSearchResultsController, didSelectMapItem: MKMapItem)
+    func mapSearchResultsController(_ mapSearchResultsController: MapSearchResultsController, didSelectMapItem: MKMapItem)
 }
 
 class MapSearchResultsController: UITableViewController, UISearchResultsUpdating, MapSearchResultsView {
     
-    private enum Constants {
+    fileprivate enum Constants {
         static let reuseIdentifier = "UI"
     }
     
@@ -39,7 +39,7 @@ class MapSearchResultsController: UITableViewController, UISearchResultsUpdating
     init(style: UITableViewStyle, delegate: MapSearchResultsDelegate) {
         super.init(style: style)
         viewModel = MapSearchResultsViewModel(view: self)
-        tableView.registerClass(DefaultTableViewCellWithSubtitleStyle.self, forCellReuseIdentifier: Constants.reuseIdentifier)
+        tableView.register(DefaultTableViewCellWithSubtitleStyle.self, forCellReuseIdentifier: Constants.reuseIdentifier)
         self.delegate = delegate
     }
     
@@ -52,8 +52,8 @@ class MapSearchResultsController: UITableViewController, UISearchResultsUpdating
         setupBindings()
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(Constants.reuseIdentifier, forIndexPath: indexPath)
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reuseIdentifier, for: indexPath)
         if let obj = self.results.value[indexPath.row] as? MKMapItem {
             cell.textLabel?.text = obj.name
             cell.detailTextLabel?.text = obj.placemark.country
@@ -61,24 +61,24 @@ class MapSearchResultsController: UITableViewController, UISearchResultsUpdating
         return cell
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         guard let mapItem = results.value[indexPath.row] as? MKMapItem else {
             return
         }
         delegate.mapSearchResultsController(self, didSelectMapItem: mapItem)
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return results.value.count
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     // MARK: UISearchResultsUpdating
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         if let searchText = searchController.searchBar.text {
             viewModel.searchText.value = searchText
         }
@@ -87,19 +87,19 @@ class MapSearchResultsController: UITableViewController, UISearchResultsUpdating
     func setupBindings() {
         networkActivityIndicatorShow
             .asObservable()
-            .subscribeNext { (shouldShow) in
-                UIApplication.sharedApplication().networkActivityIndicatorVisible = shouldShow
-            }
+            .subscribe(onNext: { (shouldShow) in
+                UIApplication.shared.isNetworkActivityIndicatorVisible = shouldShow
+            })
             .addDisposableTo(disposeBag)
         
         results
             .asObservable()
-            .subscribeNext { [weak self] (results) in
+            .subscribe({ [weak self] (results) in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.tableView.reloadData()
-            }
+            })
             .addDisposableTo(disposeBag)
     }
 }
@@ -107,7 +107,7 @@ class MapSearchResultsController: UITableViewController, UISearchResultsUpdating
 class DefaultTableViewCellWithSubtitleStyle: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: .Subtitle, reuseIdentifier: reuseIdentifier)
+        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
     }
     
     required init?(coder aDecoder: NSCoder) {

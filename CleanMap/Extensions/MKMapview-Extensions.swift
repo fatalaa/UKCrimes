@@ -9,13 +9,13 @@
 import MapKit
 
 extension MKMapView {
-    func setVisibleRegion(radius: Double, centerCoordinate: CLLocationCoordinate2D) {
+    func setVisibleRegion(_ radius: Double, centerCoordinate: CLLocationCoordinate2D) {
         
         enum MKMapViewExtensionConstants {
             static let mileAsMeters = 1609.344
         }
         
-        func milesToMeters(mile: Double) -> Double {
+        func milesToMeters(_ mile: Double) -> Double {
             return mile * MKMapViewExtensionConstants.mileAsMeters
         }
         let region = MKCoordinateRegionMakeWithDistance(centerCoordinate,
@@ -24,7 +24,7 @@ extension MKMapView {
         setRegion(region, animated: true)
     }
     
-    func addAnnotationsBasedOnCrimes(crimes: [CrimeAnnotationModel]) {
+    func addAnnotationsBasedOnCrimes(_ crimes: [CrimeAnnotationModel]) {
         for crime in crimes {
             let annotation = MKPointAnnotation()
             annotation.coordinate = crime.coordinate
